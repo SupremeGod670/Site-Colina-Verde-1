@@ -237,4 +237,18 @@ router.delete('/drinks/:id', authenticateToken, async (req, res) => {
   res.sendStatus(204);
 });
 
+// Rotas públicas para o site mostrar cardápio
+router.get('/public/buffet', async (req, res) => {
+  const result = await pool.query("SELECT * FROM buffet ORDER BY data_buffet DESC, horario_buffet ASC");
+  res.json(result.rows);
+});
+router.get('/public/porcoes', async (req, res) => {
+  const result = await pool.query("SELECT * FROM porcoes ORDER BY nome_porcao ASC");
+  res.json(result.rows);
+});
+router.get('/public/drinks', async (req, res) => {
+  const result = await pool.query("SELECT * FROM drinks ORDER BY nome_drink ASC");
+  res.json(result.rows);
+});
+
 module.exports = router;

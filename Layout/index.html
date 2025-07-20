@@ -39,35 +39,35 @@
         <section class="cardapio" id="cardapio">
             <h2>Nosso Cardápio</h2>
             <nav class="cards" aria-label="Links do cardápio">
-                <a href="cardapio.html?tab=buffet" class="card-link">
+                <a href="cardapio.html?tab=buffet" class="card-link" id="buffet-card-link">
                     <article class="card">
                         <figure>
-                            <img src="../Img/Buffet.png" alt="Buffet" />
+                            <img id="buffet-card-img" src="../Img/Buffet.png" alt="Buffet" />
                             <figcaption>
                                 <h3>Buffet</h3>
-                                <p>Self-service variado com mais de 20 opções.</p>
+                                <p id="buffet-card-desc">Self-service variado com mais de 20 opções.</p>
                             </figcaption>
                         </figure>
                     </article>
                 </a>
-                <a href="cardapio.html?tab=porcoes" class="card-link">
+                <a href="cardapio.html?tab=porcoes" class="card-link" id="porcoes-card-link">
                     <article class="card">
                         <figure>
-                            <img src="../Img/Petiscos.png" alt="Porções" />
+                            <img id="porcoes-card-img" src="../Img/Petiscos.png" alt="Porções" />
                             <figcaption>
                                 <h3>Porções</h3>
-                                <p>Porções crocantes para compartilhar.</p>
+                                <p id="porcoes-card-desc">Porções crocantes para compartilhar.</p>
                             </figcaption>
                         </figure>
                     </article>
                 </a>
-                <a href="cardapio.html?tab=drinks" class="card-link">
+                <a href="cardapio.html?tab=drinks" class="card-link" id="drinks-card-link">
                     <article class="card">
                         <figure>
-                            <img src="../Img/Drinks.png" alt="Drinks" />
+                            <img id="drinks-card-img" src="../Img/Drinks.png" alt="Drinks" />
                             <figcaption>
                                 <h3>Drinks</h3>
-                                <p>Bebidas refrescantes e autorais.</p>
+                                <p id="drinks-card-desc">Bebidas refrescantes e autorais.</p>
                             </figcaption>
                         </figure>
                     </article>
@@ -102,6 +102,39 @@
         </nav>
     </footer>
 
+    <script>
+        // Atualiza imagens e descrições dos cards principais com dados do banco
+        (async function updateMainCards() {
+            const API = "http://localhost:3000/api/public";
+            // Buffet
+            try {
+                const res = await fetch(`${API}/buffet`);
+                const data = await res.json();
+                if (data.length > 0) {
+                    document.getElementById('buffet-card-img').src = data[0].url_imagem ? data[0].url_imagem : "../Img/Buffet.png";
+                    document.getElementById('buffet-card-desc').textContent = data[0].descricao || "Buffet variado.";
+                }
+            } catch {}
+            // Porções
+            try {
+                const res = await fetch(`${API}/porcoes`);
+                const data = await res.json();
+                if (data.length > 0) {
+                    document.getElementById('porcoes-card-img').src = data[0].url_imagem ? data[0].url_imagem : "../Img/Petiscos.png";
+                    document.getElementById('porcoes-card-desc').textContent = data[0].nome_porcao || "Porções crocantes.";
+                }
+            } catch {}
+            // Drinks
+            try {
+                const res = await fetch(`${API}/drinks`);
+                const data = await res.json();
+                if (data.length > 0) {
+                    document.getElementById('drinks-card-img').src = data[0].url_imagem ? data[0].url_imagem : "../Img/Drinks.png";
+                    document.getElementById('drinks-card-desc').textContent = data[0].nome_drink || "Drinks autorais.";
+                }
+            } catch {}
+        })();
+    </script>
 </body>
 
 </html>

@@ -26,172 +26,76 @@ function expandImage(src, alt) {
     modal.focus();
   }
 }
-// Buffet
-const buffetItens = [
-  { nome: "Arroz", img: "../Img/Buffet.png" },
-  { nome: "Feijão", img: "../Img/Buffet.png" },
-  { nome: "Salada", img: "../Img/Buffet.png" },
-  { nome: "Macarrão", img: "../Img/Buffet.png" },
-];
-const buffetCarousel = document.querySelector("#buffet .carousel");
-if (buffetCarousel) {
-  buffetCarousel.innerHTML = buffetItens
-    .map(
-      (item) => `
-      <figure>
-        <img src="${item.img}" alt="${item.nome}" style="width:100%;height:200px;object-fit:cover;border-radius:12px 12px 0 0;cursor:pointer;" onclick="expandImage('${item.img}','${item.nome}')" tabindex="0" aria-label="Expandir imagem de ${item.nome}">
-        <figcaption>${item.nome}</figcaption>
-      </figure>
-    `
-    )
-    .join("");
-}
-function createCardapio() {
+
+// Função para buscar e mostrar itens do cardápio
+async function loadCardapio() {
+  const API = "http://localhost:3000/api/public";
+
+  // Buffet
+  const buffetCarousel = document.querySelector("#buffet .carousel");
+  if (buffetCarousel) {
+    try {
+      const res = await fetch(`${API}/buffet`);
+      const data = await res.json();
+      if (data.length > 0) {
+        buffetCarousel.innerHTML = data.map(item => `
+          <figure>
+            <img src="${item.url_imagem ? item.url_imagem : '../Img/Buffet.png'}" alt="${item.descricao || 'Buffet'}" style="width:100%;height:200px;object-fit:cover;border-radius:12px 12px 0 0;cursor:pointer;" onclick="expandImage('${item.url_imagem ? item.url_imagem : '../Img/Buffet.png'}','${item.descricao || 'Buffet'}')" tabindex="0" aria-label="Expandir imagem de ${item.descricao || 'Buffet'}">
+            <figcaption>${item.descricao || 'Buffet'}</figcaption>
+          </figure>
+        `).join('');
+        const priceElem = document.querySelector("#buffet .price");
+        if (priceElem) {
+          priceElem.textContent = `Preço: R$ ${Number(data[0].preco_por_kg).toFixed(2)}`;
+        }
+      } else {
+        buffetCarousel.innerHTML = "<p>Buffet indisponível no momento.</p>";
+      }
+    } catch {
+      buffetCarousel.innerHTML = "<p>Erro ao carregar buffet.</p>";
+    }
+  }
+
   // Porções
-  const porcoes = [
-    {
-      nome: "Baguette (aipim com bacon)",
-      inteira: "R$ 15,00",
-      meia: "R$ 7,50",
-      img: "../Img/Petiscos.png",
-    },
-    {
-      nome: "Bolinho de aipim com camarão",
-      inteira: "R$ 20,00",
-      meia: "R$ 10,00",
-      img: "../Img/Petiscos.png",
-    },
-    {
-      nome: "Bolinho de aipim com queijo",
-      inteira: "R$ 20,00",
-      meia: "R$ 10,00",
-      img: "../Img/Petiscos.png",
-    },
-    {
-      nome: "Bolinho de peixe",
-      inteira: "R$ 23,00",
-      meia: "R$ 10,00",
-      img: "../Img/Petiscos.png",
-    },
-    {
-      nome: "Camarão ao bafo",
-      inteira: "R$ 40,00",
-      meia: "R$ 20,00",
-      img: "../Img/Petiscos.png",
-    },
-    {
-      nome: "Camarão à milanesa",
-      inteira: "R$ 40,00",
-      meia: "R$ 20,00",
-      img: "../Img/Petiscos.png",
-    },
-    {
-      nome: "Camarão ensopado (Domingos - Almoço)",
-      inteira: "R$ 40,00",
-      meia: null,
-      img: "../Img/Petiscos.png",
-    },
-    {
-      nome: "Casquinha de siri (unidade)",
-      inteira: "R$ 5,00",
-      meia: null,
-      img: "../Img/Petiscos.png",
-    },
-    {
-      nome: "Cebola à milanesa",
-      inteira: "R$ 14,00",
-      meia: "R$ 7,00",
-      img: "../Img/Petiscos.png",
-    },
-    {
-      nome: "Frango à passarinho",
-      inteira: "R$ 16,00",
-      meia: "R$ 8,00",
-      img: "../Img/Petiscos.png",
-    },
-    {
-      nome: "Frios (salame, queijo, azeitona, pepino)",
-      inteira: "R$ 20,00",
-      meia: "R$ 10,00",
-      img: "../Img/Petiscos.png",
-    },
-    {
-      nome: "Fritas",
-      inteira: "R$ 14,00",
-      meia: "R$ 7,00",
-      img: "../Img/Petiscos.png",
-    },
-    {
-      nome: "Peixe isca (tilápia, papa-terra, pescada, linguado)",
-      inteira: "R$ 20,00",
-      meia: "R$ 10,00",
-      img: "../Img/Petiscos.png",
-    },
-    {
-      nome: "Peixe ensopado (Domingos - Almoço)",
-      inteira: "R$ 20,00",
-      meia: "R$ 10,00",
-      img: "../Img/Petiscos.png",
-    },
-    {
-      nome: "Peixe filé (papa-terra, pescada)",
-      inteira: "R$ 20,00",
-      meia: "R$ 10,00",
-      img: "../Img/Petiscos.png",
-    },
-    {
-      nome: "Peixe posta (tainha, papa-terra, anchova)",
-      inteira: "R$ 20,00",
-      meia: "R$ 10,00",
-      img: "../Img/Petiscos.png",
-    },
-    {
-      nome: "Polentinha",
-      inteira: "R$ 12,00",
-      meia: "R$ 6,00",
-      img: "../Img/Petiscos.png",
-    },
-    {
-      nome: "Queijo à milanesa",
-      inteira: "R$ 20,00",
-      meia: "R$ 10,00",
-      img: "../Img/Petiscos.png",
-    },
-  ];
   const porcoesContainer = document.getElementById("porcoes-items");
   if (porcoesContainer) {
-    porcoesContainer.innerHTML = porcoes
-      .map((item) => {
-        let preco = item.meia ? `${item.inteira} / ${item.meia}` : item.inteira;
+    try {
+      const res = await fetch(`${API}/porcoes`);
+      const data = await res.json();
+      porcoesContainer.innerHTML = data.map(item => {
+        let preco = item.preco_meia ? `${item.preco_inteira} / ${item.preco_meia}` : item.preco_inteira;
         return `<li class="menu-item">
           <figure style="width:80px; margin:0 10px 0 0; display:inline-block; vertical-align:middle;">
-            <img src="${item.img}" alt="${item.nome}" style="width:100%;border-radius:8px;cursor:pointer;" onclick="expandImage('${item.img}','${item.nome}')" tabindex="0" aria-label="Expandir imagem de ${item.nome}">
-            <figcaption style="font-size:0.85rem;color:#388e3c;">${item.nome}</figcaption>
+            <img src="${item.url_imagem ? item.url_imagem : '../Img/Petiscos.png'}" alt="${item.nome_porcao}" style="width:100%;border-radius:8px;cursor:pointer;" onclick="expandImage('${item.url_imagem ? item.url_imagem : '../Img/Petiscos.png'}','${item.nome_porcao}')" tabindex="0" aria-label="Expandir imagem de ${item.nome_porcao}">
+            <figcaption style="font-size:0.85rem;color:#388e3c;">${item.nome_porcao}</figcaption>
           </figure>
-          <span style="font-weight:bold; color:#388e3c;">${preco}</span>
+          <span style="font-weight:bold; color:#388e3c;">${preco || ''}</span>
         </li>`;
-      })
-      .join("");
+      }).join('');
+    } catch {
+      porcoesContainer.innerHTML = "<li>Erro ao carregar porções.</li>";
+    }
   }
 
   // Drinks
-  const drinks = [
-    { nome: "Caipirinha", preco: "R$ 15,00", img: "../Img/Drinks.png" },
-    { nome: "Refrigerante", preco: "R$ 6,00", img: "../Img/Drinks.png" },
-  ];
   const drinksContainer = document.getElementById("drinks-items");
   if (drinksContainer) {
-    drinksContainer.innerHTML = drinks
-      .map(
-        (item) =>
-          `<li class="menu-item">
-            <figure style="width:80px; margin:0 10px 0 0; display:inline-block; vertical-align:middle;">
-              <img src="${item.img}" alt="${item.nome}" style="width:100%;border-radius:8px;cursor:pointer;" onclick="expandImage('${item.img}','${item.nome}')" tabindex="0" aria-label="Expandir imagem de ${item.nome}">
-              <figcaption style="font-size:0.85rem;color:#388e3c;">${item.nome}</figcaption>
-            </figure>
-            <span style="font-weight:bold; color:#388e3c;">${item.preco}</span>
-          </li>`
-      )
-      .join("");
+    try {
+      const res = await fetch(`${API}/drinks`);
+      const data = await res.json();
+      drinksContainer.innerHTML = data.map(item => `
+        <li class="menu-item">
+          <figure style="width:80px; margin:0 10px 0 0; display:inline-block; vertical-align:middle;">
+            <img src="${item.url_imagem ? item.url_imagem : '../Img/Drinks.png'}" alt="${item.nome_drink}" style="width:100%;border-radius:8px;cursor:pointer;" onclick="expandImage('${item.url_imagem ? item.url_imagem : '../Img/Drinks.png'}','${item.nome_drink}')" tabindex="0" aria-label="Expandir imagem de ${item.nome_drink}">
+            <figcaption style="font-size:0.85rem;color:#388e3c;">${item.nome_drink}</figcaption>
+          </figure>
+          <span style="font-weight:bold; color:#388e3c;">${item.preco || ''}</span>
+        </li>
+      `).join('');
+    } catch {
+      drinksContainer.innerHTML = "<li>Erro ao carregar drinks.</li>";
+    }
   }
 }
+
+window.createCardapio = loadCardapio;
